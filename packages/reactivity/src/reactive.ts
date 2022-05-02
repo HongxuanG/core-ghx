@@ -201,6 +201,7 @@ function createReactiveObject(
   }
   // target already has corresponding Proxy
   const existingProxy = proxyMap.get(target)
+  // 防止重复创建相同来源的proxy
   if (existingProxy) {
     return existingProxy
   }

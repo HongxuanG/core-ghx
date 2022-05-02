@@ -80,6 +80,7 @@ function createArrayInstrumentations() {
 }
 
 function createGetter(isReadonly = false, shallow = false) {
+  // receiver总是指向proxy实例
   return function get(target: Target, key: string | symbol, receiver: object) {
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly
@@ -88,6 +89,7 @@ function createGetter(isReadonly = false, shallow = false) {
     } else if (key === ReactiveFlags.IS_SHALLOW) {
       return shallow
     } else if (
+      // 当前的proxy实例在对应的map能够被找到，并且key为ReactiveFlags.RAW
       key === ReactiveFlags.RAW &&
       receiver ===
         (isReadonly
@@ -163,6 +165,7 @@ function createSetter(shallow = false) {
         return true
       }
     } else {
+      // 在浅模式中，对象被设置为原样，而不管是否具有响应性
       // in shallow mode, objects are set as-is regardless of reactive or not
     }
 
