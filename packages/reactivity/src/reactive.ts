@@ -205,9 +205,9 @@ function createReactiveObject(
   if (existingProxy) {
     return existingProxy
   }
-  // only a whitelist of value types can be observed.
+  // only a whitelist of value types can be observed.  target只有特定的类型才能传入proxy 不是这些范围的一律原样返回
   const targetType = getTargetType(target)
-  if (targetType === TargetType.INVALID) {
+  if (targetType === TargetType.INVALID) {   // 像值类型的这些数据类型，都必须原样返回
     return target
   }
   const proxy = new Proxy(
