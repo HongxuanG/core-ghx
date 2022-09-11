@@ -175,7 +175,7 @@ export type CreateAppFunction<HostElement> = (
 let uid = 0
 
 export function createAppAPI<HostElement>(
-  render: RootRenderFunction,
+  render: RootRenderFunction<HostElement>,
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   return function createApp(rootComponent, rootProps = null) {
@@ -284,6 +284,14 @@ export function createAppAPI<HostElement>(
         isSVG?: boolean
       ): any {
         if (!isMounted) {
+          // #5571
+          if (__DEV__ && (rootContainer as any).__vue_app__) {
+            warn(
+              `There is already an app instance mounted on the host container.\n` +
+                ` If you want to mount another app on the same host container,` +
+                ` you need to unmount the previous app by calling \`app.unmount()\` first.`
+            )
+          }
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -345,9 +353,8 @@ export function createAppAPI<HostElement>(
               `It will be overwritten with the new value.`
           )
         }
-        // TypeScript doesn't allow symbols as index type
-        // https://github.com/Microsoft/TypeScript/issues/24587
-        context.provides[key as string] = value
+
+        context.provides[key as string | symbol] = value
 
         return app
       }
